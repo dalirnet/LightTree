@@ -27,7 +27,8 @@ gulp.task("html", function () {
 gulp.task("copy", function () {
     return gulp.src([
         "src/manifest.json",
-        "src/browserconfig.xml"
+        "src/browserconfig.xml",
+        "src/phaser.min.js"
     ]).pipe(gulp.dest("build"));
 });
 

@@ -1,1 +1,23 @@
-"use strict";!function i(u,f,c){function a(e,r){if(!f[e]){if(!u[e]){var n="function"==typeof require&&require;if(!r&&n)return n(e,!0);if(s)return s(e,!0);var t=new Error("Cannot find module '"+e+"'");throw t.code="MODULE_NOT_FOUND",t}var o=f[e]={exports:{}};u[e][0].call(o.exports,function(r){return a(u[e][1][r]||r)},o,o.exports,i,u,f,c)}return f[e].exports}for(var s="function"==typeof require&&require,r=0;r<c.length;r++)a(c[r]);return a}({1:[function(r,e,n){console.log("amir")},{}]},{},[1]);
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+
+class Game extends Phaser.Game {
+    constructor(width = window.innerWidth, height = window.innerHeight) {
+        super({
+            width: width,
+            height: height,
+            renderer: Phaser.AUTO,
+            parent: "game",
+            transparent: true,
+            antialias: true
+        });
+    }
+}
+
+
+const gameObject = new Game();
+
+
+console.log(gameObject);
+},{}]},{},[1])
+
+//# sourceMappingURL=action.js.map
