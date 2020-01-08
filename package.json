@@ -1,0 +1,48 @@
+{
+  "name": "lighttree",
+  "version": "1.0.0",
+  "description": "Game for fun",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalirnet/LightTree.git"
+  },
+  "keywords": [
+    "game",
+    "iran",
+    "fun"
+  ],
+  "author": "AmirRezaDalir",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dalirnet/LightTree/issues"
+  },
+  "homepage": "https://github.com/dalirnet/LightTree#readme",
+  "devDependencies": {
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "browserify": "^16.5.0",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^7.0.1",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-csso": "^4.0.1",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "gulplog": "^1.0.0",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "browserslist": [
+    "last 1 version",
+    "> 1%",
+    "IE 10"
+  ],
+  "dependencies": {
+    "phaser": "^3.21.0"
+  }
+}

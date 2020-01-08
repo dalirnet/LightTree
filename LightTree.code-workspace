@@ -1,0 +1,23 @@
+{
+	"folders": [{
+		"name": "src",
+		"path": "src/"
+	}, {
+		"name": "build",
+		"path": "build/"
+	}, {
+		"name": "root",
+		"path": "."
+	}],
+	"settings": {
+		"files.exclude": {
+			".history": true,
+			"**/.history": true,
+			"node_modules": true,
+			"ui": true,
+			"src/icon": true,
+			"src/svg": true
+		},
+		"liveServer.settings.multiRootWorkspaceName": "build"
+	}
+}
