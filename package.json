@@ -31,6 +31,7 @@
     "gulp-clean-css": "^4.2.0",
     "gulp-csso": "^4.0.1",
     "gulp-htmlmin": "^5.0.1",
+    "gulp-replace": "^1.0.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "gulplog": "^1.0.0",

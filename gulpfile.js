@@ -2,6 +2,7 @@
 const gulp = require("gulp");
 const log = require("gulplog");
 const sourcemaps = require("gulp-sourcemaps");
+const replace = require("gulp-replace");
 
 // html
 const htmlMin = require("gulp-htmlmin");
@@ -57,26 +58,37 @@ gulp.task("js-debug", function () {
     return browserify({
         entries: "src/action.js",
         debug: true
-    }).bundle().pipe(source("action.js")).pipe(buffer()).pipe(sourcemaps.init({
-        loadMaps: true
-    })).on("error", log.error).pipe(sourcemaps.write("./")).pipe(gulp.dest("build"));
+    }).bundle()
+        .pipe(source("action.js"))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({
+            loadMaps: true
+        })).on("error", log.error)
+        .pipe(replace("\"@@debug\"", "true"))
+        .pipe(sourcemaps.write("./"))
+        .pipe(gulp.dest("build"));
 });
 
 gulp.task("js", function () {
     return browserify({
         entries: "src/action.js",
         debug: false
-    }).bundle().pipe(source("action.js")).pipe(buffer()).pipe(babel({
-        presets: ["@babel/env"],
-        compact: false
-    })).pipe(uglify()).on("error", log.error).pipe(gulp.dest("build"));
+    }).bundle()
+        .pipe(source("action.js"))
+        .pipe(buffer())
+        .pipe(babel({
+            presets: ["@babel/env"],
+            compact: false
+        }))
+        .pipe(uglify()).on("error", log.error)
+        .pipe(replace("\"@@debug\"", "false"))
+        .pipe(gulp.dest("build"));
 });
 
 gulp.task("watch", function () {
     gulp.watch(["src/index.html"], gulp.registry().get("html"));
     gulp.watch(["src/style.css"], gulp.registry().get("css"));
-    gulp.watch(["src/action.js"], gulp.registry().get("js-debug"));
-    gulp.watch(["src/action/*.js"], gulp.registry().get("js-debug"));
+    gulp.watch(["src/**/*.js"], gulp.registry().get("js-debug"));
 })
 
 
