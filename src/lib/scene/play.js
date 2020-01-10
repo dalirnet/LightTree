@@ -12,7 +12,10 @@ class Play extends Scene {
     }
     create() {
         super.create();
-        this.runSpace(["cloud"]);
+        this.runSpace("max");
+        // setTimeout(() => {
+        //     this.pauseSpace();
+        // }, 6000);
     }
 }
 

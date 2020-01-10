@@ -1,1 +1,1 @@
-#game,body,html{overflow:hidden}#game>*,html{background:#fcf1de}body{margin:0;padding:0}
+#game,body,html{overflow:hidden}#game>canvas,html{background:#fcf1de}body{margin:0;padding:0}#game>canvas{opacity:0}

@@ -1,9 +1,9 @@
 // load scenes
-const BootScene = require("./scenes/boot");
-const PlayScene = require("./scenes/play");
+const BootScene = require("./scene/boot");
+const PlayScene = require("./scene/play");
 
 class Game extends Phaser.Game {
-    constructor(width = window.innerWidth, height = window.innerHeight, font, debug = false) {
+    constructor(font, debug = false) {
         if (debug) {
             console.time("Game");
         }
@@ -11,7 +11,7 @@ class Game extends Phaser.Game {
             renderer: Phaser.AUTO,
             antialias: true,
             backgroundColor: "#fcf1de",
-            pixelArt: true,
+            pixelArt: false,
             roundPixels: true,
             autoCenter: true,
             banner: debug,
@@ -32,10 +32,12 @@ class Game extends Phaser.Game {
     }
     start() {
         super.start();
+        document.querySelector("#game canvas").style.opacity = 1;
         if (this.debug) {
             console.timeEnd("Game");
         }
         this.scale.on("resize", () => {
+            document.querySelector("#game canvas").style.opacity = 0;
             window.location.reload();
         });
     }

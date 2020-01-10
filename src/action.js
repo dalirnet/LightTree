@@ -1,13 +1,12 @@
 const debug = "@@debug";
-const font = "Cute Font";
+const fontFamily = "Cute Font";
 const Game = require("./lib/game");
 
 WebFont.load({
     google: {
-        families: [font]
+        families: [fontFamily]
     },
     active() {
-        // new game
-        const gameObject = new Game(window.innerWidth, window.innerHeight, font, debug);
+        const gameObject = new Game(fontFamily, debug);
     }
 });
