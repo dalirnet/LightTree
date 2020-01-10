@@ -41,30 +41,31 @@ class Platform extends Phaser.GameObjects.Container {
         this.limit = this.scene.game.config.width * -1;
         this.scene.add.existing(this);
         this.addContent(this.scope.one);
+        this.addContent(this.scope.two);
     }
     addContent(scope) {
-        do {
-            let space = Phaser.Math.Between(20, this.scene.game.config.width * 0.1);
+        // do {
+        let space = Phaser.Math.Between(20, this.scene.game.config.width * 0.1);
 
-            // let lightCount = Phaser.Math.Between(0, 4);
-            // let tree = new TreeSprite(this.scene, Phaser.Math.Between(1, 6), lightCount).show().setX(scope.keep + space);
-            // scope.el.add(tree);
-            // scope.keep += tree.width + space;
+        let lightCount = Phaser.Math.Between(0, 4);
+        let tree = new TreeSprite(this.scene, Phaser.Math.Between(1, 6), lightCount).show().setX(scope.keep + space);
+        scope.el.add(tree);
+        scope.keep += tree.width + space;
 
-            // let pole = new PoleSprite(this.scene).show().setX(scope.keep + space);
-            // scope.el.add(pole);
-            // scope.keep += pole.displayWidth + space;
+        let pole = new PoleSprite(this.scene).show().setX(scope.keep + space);
+        scope.el.add(pole);
+        scope.keep += pole.displayWidth + space;
 
-            // let bench = new BenchSprite(this.scene).show().setX(scope.keep + space);
-            // scope.el.add(bench);
-            // scope.keep += bench.displayWidth + space;
+        let bench = new BenchSprite(this.scene).show().setX(scope.keep + space);
+        scope.el.add(bench);
+        scope.keep += bench.displayWidth + space;
 
-            let lamp = new LampSprite(this.scene, 1, false, false).show().setX(scope.keep + space);
-            scope.el.add(lamp);
-            scope.keep += lamp.displayWidth + space;
+        let lamp = new LampSprite(this.scene, 1, false, false).show().setX(scope.keep + space);
+        scope.el.add(lamp);
+        scope.keep += lamp.displayWidth + space;
 
-        }
-        while (scope.keep <= scope.el.width * 0.8);
+        // }
+        // while (scope.keep <= scope.el.width * 0.8);
     }
     removeContent(scope) {
         scope.status = "pause";
@@ -76,6 +77,7 @@ class Platform extends Phaser.GameObjects.Container {
             // child.destroy();
         });
         scope.el.removeAll(true);
+        scope.keep = 20;
     }
     run(speed = 0) {
         if (speed) {
@@ -86,6 +88,7 @@ class Platform extends Phaser.GameObjects.Container {
                     this.removeContent(this.scope.one);
                     this.scope.available = "one";
                     this.scope.three.status = "active";
+                    this.addContent(this.scope.three);
                 }
             }
             if (this.scope.two.status == "active") {
@@ -94,6 +97,7 @@ class Platform extends Phaser.GameObjects.Container {
                     this.removeContent(this.scope.two);
                     this.scope.available = "two";
                     this.scope.one.status = "active";
+                    this.addContent(this.scope.one);
                 }
             }
             if (this.scope.three.status == "active") {
@@ -102,19 +106,23 @@ class Platform extends Phaser.GameObjects.Container {
                     this.removeContent(this.scope.three);
                     this.scope.available = "three";
                     this.scope.two.status = "active";
+                    this.addContent(this.scope.two);
                     // test
-                    this.scene.pauseSpace();
+                    // this.scene.pauseSpace();
                 }
             }
-            this.title.setText(Math.round(this.level.score).toString().padStart(6, "0"));
+            this.title.setText(Math.round(this.level.score / 10).toString().padStart(6, "0"));
         }
     }
     area(scope, color) {
         scope.setSize(this.scene.game.config.width - 40, (this.scene.game.config.height * 0.8) - 40)
-        let area = this.scene.add.graphics(0, 0)
-            .fillStyle(color, 0.05)
-            .fillRect(20, 20, scope.width, scope.height);
-        scope.add(area);
+        let areaStart = this.scene.add.graphics(0, 0)
+            .fillStyle(color, 0.5)
+            .fillRect(10, 10, 2, scope.height + 20);
+        let areaEnd = this.scene.add.graphics(0, 0)
+            .fillStyle(color, 0.5)
+            .fillRect(scope.width - 10, 10, 2, scope.height + 20);
+        scope.add([areaStart, areaEnd]);
         return this;
     }
 }

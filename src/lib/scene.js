@@ -31,10 +31,10 @@ class Scene extends Phaser.Scene {
             .setOrigin(0, 1)
             .setDepth(1);
         this.city.speed = { current: 0, pause: 0, min: 0.1, mid: 0.3, max: 0.6 };
-        this.cloud = this.add.tileSprite(0, this.game.config.height * 0.7, this.game.config.width, 105, "cloud")
+        this.cloud = this.add.tileSprite(0, this.game.config.height * 0.6, this.game.config.width, 105, "cloud")
             .setOrigin(0, 1)
             .setDepth(2);
-        this.cloud.speed = { current: 0, pause: 0, min: -0.2, mid: 0.4, max: 0.8 };
+        this.cloud.speed = { current: 0, pause: 0, min: -0.2, mid: -0.4, max: -0.6 };
         // load platform
         if (this.name == "Play") {
             this.platform = new Platform(this);
