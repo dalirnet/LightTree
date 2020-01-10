@@ -1,32 +1,48 @@
+// load scenes
 const BootScene = require("./scenes/boot");
+const PlayScene = require("./scenes/play");
 
 class Game extends Phaser.Game {
-    constructor(width = window.innerWidth, height = window.innerHeight, debug = false) {
+    constructor(width = window.innerWidth, height = window.innerHeight, font, debug = false) {
         if (debug) {
             console.time("Game");
         }
         super({
-            width: width,
-            height: height,
             renderer: Phaser.AUTO,
-            parent: "game",
             antialias: true,
             backgroundColor: "#fcf1de",
+            pixelArt: true,
+            roundPixels: true,
+            autoCenter: true,
             banner: debug,
+            disableContextMenu: !debug,
+            scale: {
+                mode: Phaser.Scale.RESIZE,
+                parent: "game",
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
             scene: [
-                BootScene
+                BootScene,
+                PlayScene
             ]
         });
+        this.font = font;
         this.debug = debug;
     }
     start() {
         super.start();
         if (this.debug) {
             console.timeEnd("Game");
-            console.groupCollapsed("%cScenes Log", "color:green;");
-            for (let index in this.scene.scenes) {
-                console.table(this.scene.scenes[index].log());
-            }
+        }
+        this.scale.on("resize", () => {
+            window.location.reload();
+        });
+    }
+    sceneLog(name, log) {
+        if (this.debug) {
+            console.groupCollapsed(`%cScene Log [${name}]`, "color: green;");
+            console.table(log);
             console.groupEnd();
         }
     }

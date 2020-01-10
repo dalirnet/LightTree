@@ -12,3 +12,7 @@ body {
 #game {
     overflow: hidden;
 }
+
+#game > * {
+    background: #fcf1de;
+}

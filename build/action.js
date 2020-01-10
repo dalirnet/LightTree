@@ -1,1 +1,193 @@
-"use strict";function _typeof(e){return(_typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}function _classCallCheck(e,t){if(!(e instanceof t))throw new TypeError("Cannot call a class as a function")}function _defineProperties(e,t){for(var o=0;o<t.length;o++){var n=t[o];n.enumerable=n.enumerable||!1,n.configurable=!0,"value"in n&&(n.writable=!0),Object.defineProperty(e,n.key,n)}}function _createClass(e,t,o){return t&&_defineProperties(e.prototype,t),o&&_defineProperties(e,o),e}function _possibleConstructorReturn(e,t){return!t||"object"!==_typeof(t)&&"function"!=typeof t?_assertThisInitialized(e):t}function _assertThisInitialized(e){if(void 0===e)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return e}function _get(e,t,o){return(_get="undefined"!=typeof Reflect&&Reflect.get?Reflect.get:function(e,t,o){var n=_superPropBase(e,t);if(n){var r=Object.getOwnPropertyDescriptor(n,t);return r.get?r.get.call(o):r.value}})(e,t,o||e)}function _superPropBase(e,t){for(;!Object.prototype.hasOwnProperty.call(e,t)&&null!==(e=_getPrototypeOf(e)););return e}function _getPrototypeOf(e){return(_getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function(e){return e.__proto__||Object.getPrototypeOf(e)})(e)}function _inherits(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Super expression must either be null or a function");e.prototype=Object.create(t&&t.prototype,{constructor:{value:e,writable:!0,configurable:!0}}),t&&_setPrototypeOf(e,t)}function _setPrototypeOf(e,t){return(_setPrototypeOf=Object.setPrototypeOf||function(e,t){return e.__proto__=t,e})(e,t)}!function i(s,c,u){function l(t,e){if(!c[t]){if(!s[t]){var o="function"==typeof require&&require;if(!e&&o)return o(t,!0);if(a)return a(t,!0);var n=new Error("Cannot find module '"+t+"'");throw n.code="MODULE_NOT_FOUND",n}var r=c[t]={exports:{}};s[t][0].call(r.exports,function(e){return l(s[t][1][e]||e)},r,r.exports,i,s,c,u)}return c[t].exports}for(var a="function"==typeof require&&require,e=0;e<u.length;e++)l(u[e]);return l}({1:[function(e,t,o){new(e("./lib/game"))(window.innerWidth,window.innerHeight,false)},{"./lib/game":2}],2:[function(e,t,o){var i=e("./scenes/boot"),n=function(e){function r(){var e,t=0<arguments.length&&void 0!==arguments[0]?arguments[0]:window.innerWidth,o=1<arguments.length&&void 0!==arguments[1]?arguments[1]:window.innerHeight,n=2<arguments.length&&void 0!==arguments[2]&&arguments[2];return _classCallCheck(this,r),n&&console.time("Game"),(e=_possibleConstructorReturn(this,_getPrototypeOf(r).call(this,{width:t,height:o,renderer:Phaser.AUTO,parent:"game",antialias:!0,backgroundColor:"#fcf1de",banner:n,scene:[i]}))).debug=n,e}return _inherits(r,Phaser.Game),_createClass(r,[{key:"start",value:function(){if(_get(_getPrototypeOf(r.prototype),"start",this).call(this),this.debug){for(var e in console.timeEnd("Game"),console.groupCollapsed("%cScenes Log","color:green;"),this.scene.scenes)console.table(this.scene.scenes[e].log());console.groupEnd()}}}]),r}();t.exports=n},{"./scenes/boot":4}],3:[function(e,t,o){var n=function(e){function o(e){var t;return _classCallCheck(this,o),(t=_possibleConstructorReturn(this,_getPrototypeOf(o).call(this,e))).name=e,t.keepLog=[],t}return _inherits(o,Phaser.Scene),_createClass(o,[{key:"log",value:function(){var e=0<arguments.length&&void 0!==arguments[0]?arguments[0]:null,t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];return this.game.debug&&e&&this.keepLog.push({scene:this.name,bySystem:t,message:e}),this.keepLog}},{key:"init",value:function(){this.log("init",!0)}},{key:"preload",value:function(){this.log("preload",!0)}},{key:"create",value:function(){this.log("create",!0)}}]),o}();t.exports=n},{}],4:[function(e,t,o){var n=e("../scene"),r=function(e){function t(){return _classCallCheck(this,t),_possibleConstructorReturn(this,_getPrototypeOf(t).call(this,"Boot"))}return _inherits(t,n),_createClass(t,[{key:"init",value:function(){_get(_getPrototypeOf(t.prototype),"init",this).call(this)}},{key:"preload",value:function(){_get(_getPrototypeOf(t.prototype),"preload",this).call(this)}},{key:"create",value:function(){_get(_getPrototypeOf(t.prototype),"create",this).call(this),this.log("amir")}}]),t}();t.exports=new r},{"../scene":3}]},{},[1]);
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const debug = true;
+const font = "Cute Font";
+const Game = require("./lib/game");
+
+WebFont.load({
+    google: {
+        families: [font]
+    },
+    active() {
+        // new game
+        const gameObject = new Game(window.innerWidth, window.innerHeight, font, debug);
+    }
+});
+
+},{"./lib/game":2}],2:[function(require,module,exports){
+// load scenes
+const BootScene = require("./scenes/boot");
+const PlayScene = require("./scenes/play");
+
+class Game extends Phaser.Game {
+    constructor(width = window.innerWidth, height = window.innerHeight, font, debug = false) {
+        if (debug) {
+            console.time("Game");
+        }
+        super({
+            renderer: Phaser.AUTO,
+            antialias: true,
+            backgroundColor: "#fcf1de",
+            pixelArt: true,
+            roundPixels: true,
+            autoCenter: true,
+            banner: debug,
+            disableContextMenu: !debug,
+            scale: {
+                mode: Phaser.Scale.RESIZE,
+                parent: "game",
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
+            scene: [
+                BootScene,
+                PlayScene
+            ]
+        });
+        this.font = font;
+        this.debug = debug;
+    }
+    start() {
+        super.start();
+        if (this.debug) {
+            console.timeEnd("Game");
+        }
+        this.scale.on("resize", () => {
+            window.location.reload();
+        });
+    }
+    sceneLog(name, log) {
+        if (this.debug) {
+            console.groupCollapsed(`%cScene Log [${name}]`, "color: green;");
+            console.table(log);
+            console.groupEnd();
+        }
+    }
+}
+
+module.exports = Game;
+},{"./scenes/boot":4,"./scenes/play":5}],3:[function(require,module,exports){
+class Scene extends Phaser.Scene {
+    constructor(name) {
+        super(name);
+        this.name = name;
+        this.keepLog = [];
+    }
+    log(message = null, system = false) {
+        if (this.game.debug && message) {
+            this.keepLog.push({
+                message,
+                bySystem: system
+            });
+        }
+        return this.keepLog;
+    }
+    init() {
+        this.log("init", true);
+    }
+    preload() {
+        this.log("preload", true);
+    }
+    create() {
+        this.log("create", true);
+        this.game.sceneLog(this.name, this.keepLog);
+        this.ground = this.add.tileSprite(-2, this.game.config.height + 2, this.game.config.width + 4, this.game.config.height * 0.2, "ground")
+            .setOrigin(0, 1)
+            .setTileScale((this.game.device.os.desktop ? 1 : 0.6))
+            .setDepth(0);
+        this.ground.speed = { current: 0, pause: 0, min: 0.4, mid: 0.8, max: 1 };
+        this.city = this.add.tileSprite(0, this.game.config.height * 0.8, this.game.config.width, 109, "city")
+            .setOrigin(0, 1)
+            .setDepth(1);
+        this.city.speed = { current: 0, pause: 0, min: 0.2, mid: 0.4, max: 0.8 };
+        this.cloud = this.add.tileSprite(0, this.game.config.height * 0.7, this.game.config.width, 105, "cloud")
+            .setOrigin(0, 1)
+            .setDepth(2);
+        this.cloud.speed = { current: 0, pause: 0, min: -0.2, mid: 0.4, max: 0.8 };
+        this.title = this.add.text(this.game.config.width * 0.5, this.game.config.height * 0.2, `LightTree${this.game.debug ? this.name.charAt(0) : ""}`, {
+            font: `${(this.game.device.os.desktop ? "160" : "100")}px '${this.game.font}'`,
+            fill: "#FFF8EE"
+        }).setOrigin(0.5);
+    }
+    update() {
+        if (this.ground.speed.current) {
+            this.ground.tilePositionX += this.ground.speed.current;
+        }
+        if (this.city.speed.current) {
+            this.city.tilePositionX += this.city.speed.current;
+        }
+        if (this.cloud.speed.current) {
+            this.cloud.tilePositionX += this.cloud.speed.current;
+        }
+    }
+    runSpace(object = [], speed = "min") {
+        if (!object.length) {
+            object = ["ground", "city", "cloud"];
+        }
+        for (let index in object) {
+            this[object[index]].speed.current = this[object[index]].speed[speed];
+        }
+    }
+    pauseSpace() {
+        this.ground.speed.current = this.ground.speed.pause;
+        this.city.speed.current = this.city.speed.pause;
+        this.cloud.speed.current = this.cloud.speed.pause;
+    }
+}
+
+module.exports = Scene;
+},{}],4:[function(require,module,exports){
+const Scene = require("../scene");
+
+class Boot extends Scene {
+    constructor() {
+        super("Boot");
+    }
+    init() {
+        super.init();
+    }
+    preload() {
+        super.preload();
+        this.load.image("ground", "data/ground.png");
+        this.load.image("city", "data/city.png");
+        this.load.image("cloud", "data/cloud.png");
+    }
+    create() {
+        super.create();
+        //
+
+
+
+        setTimeout(() => {
+            this.scene.start("Play");
+            // this.runSpace();
+
+        }, 3000);
+        // console.log(this.game.device.os.desktop);
+    }
+
+}
+
+module.exports = Boot;
+},{"../scene":3}],5:[function(require,module,exports){
+const Scene = require("../scene");
+
+class Play extends Scene {
+    constructor() {
+        super("Play");
+    }
+    init() {
+        super.init();
+    }
+    preload() {
+        super.preload();
+    }
+    create() {
+        super.create();
+        this.runSpace(["cloud"]);
+    }
+}
+
+module.exports = Play;
+},{"../scene":3}]},{},[1])
+
+//# sourceMappingURL=action.js.map
