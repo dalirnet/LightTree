@@ -1,6 +1,5 @@
-### 🎮 LightTree
-#### 🖐Game for fun
-#### ❤️ & Js : [Play](https://dalirnet.github.io/LightTree/build/index.html)
+## 🎮 LightTree
+##### Game for fun with ♥ & Js » [PLAY](https://dalirnet.github.io/LightTree/build/index.html)
 
 ![screenshot](https://raw.githubusercontent.com/dalirnet/LightTree/master/banner.png)
 
