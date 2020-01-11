@@ -86,19 +86,19 @@ class Bench extends Phaser.GameObjects.Sprite {
 module.exports = Bench;
 },{}],4:[function(require,module,exports){
 class Lamp extends Phaser.GameObjects.Sprite {
-    constructor(scene, count = 2, status = false, flip = false) {
+    constructor(scene, count = 2, status = false, currect = true) {
         super(scene, 0, scene.game.config.height * 0.8, `lamp-${count}-${(status == true ? "on" : "off")}`);
         this.scene = scene;
         this.gameCheck = true;
-        this.gameStatus = status;
+        this.isCurrect = currect;
+        this.lightStatus = status;
         this.setOrigin(0, 0.98)
             .setScale(0.8)
             .setDepth(4)
-            .setFlipX(flip)
             .setInteractive()
             .on("pointerdown", () => {
-                this.gameStatus = !this.gameStatus;
-                this.setTexture(`lamp-${count}-${(this.gameStatus ? "on" : "off")}`);
+                this.lightStatus = !this.lightStatus;
+                this.setTexture(`lamp-${count}-${(this.lightStatus ? "on" : "off")}`);
             }, this);
         //
         return this;
@@ -121,6 +121,10 @@ class Platform extends Phaser.GameObjects.Container {
         super(scene, 0, 0);
         this.scene = scene;
         this.level = {
+            requestCount: Math.round(scene.game.config.width / 180),
+            keepResponse: [],
+            data: [],
+            current: 1,
             score: 0
         };
         this.scope = {
@@ -128,12 +132,12 @@ class Platform extends Phaser.GameObjects.Container {
             one: {
                 status: "active",
                 keep: 20,
-                el: this.scene.add.container(this.scene.game.config.width * 0.5, 0)
+                el: this.scene.add.container((this.scene.game.config.width + 100), 0)
             },
             two: {
                 status: "active",
                 keep: 20,
-                el: this.scene.add.container(this.scene.game.config.width * 1.5, 0)
+                el: this.scene.add.container((this.scene.game.config.width * 2) + 100, 0)
             },
             three: {
                 status: "pause",
@@ -144,53 +148,206 @@ class Platform extends Phaser.GameObjects.Container {
         this.area(this.scope.one.el, 0xff0000);
         this.area(this.scope.two.el, 0x00ff00);
         this.area(this.scope.three.el, 0x0000ff);
-        // add title
-        this.title = this.scene.add.text(this.scene.game.config.width * 0.5, this.scene.game.config.height * 0.15, "", {
-            font: `${(this.scene.game.device.os.desktop ? "160" : "100")}px '${this.scene.game.font}'`,
-            fill: "#FFF8EE"
-        }).setText(`LightTree${this.scene.game.debug ? this.scene.name.charAt(0) : ""}`).setOrigin(0.5);
-        this.add([this.title, this.scope.one.el, this.scope.two.el, this.scope.three.el]).setDepth(10);
+        this.add([this.scope.one.el, this.scope.two.el, this.scope.three.el]).setDepth(10);
         // set limit
         this.limit = this.scene.game.config.width * -1;
+    }
+    show() {
         this.scene.add.existing(this);
+        // init start content
         this.addContent(this.scope.one);
         this.addContent(this.scope.two);
     }
+    initRequest() {
+        this.level.data = [];
+        for (let i = 1; i <= this.level.requestCount; i++) {
+            this.level.data.push(this.createRequest(this.level.current, (i == this.level.requestCount ? true : Phaser.Utils.Array.GetRandom([true, false]))));
+        }
+        if (this.level.current > (this.scene.game.device.os.desktop ? 2 : 4)) {
+            this.scene.runSpace("mid");
+        }
+        if (this.level.current > (this.scene.game.device.os.desktop ? 5 : 10)) {
+            this.scene.runSpace("max");
+        }
+        this.level.current++;
+    }
+    createRequest(level, createResponse = true) {
+        let worldLevel = Math.ceil(level / 3);
+        let request = {
+            count: 0,
+            light: Phaser.Math.Between(0, worldLevel),
+            pole: {
+                status: (Phaser.Math.Between(1, 12) >= 8 ? true : false),
+                more: 0
+            }
+        };
+        if (request.light > 4) {
+            request.light = 4;
+        }
+        if (request.pole.status && (request.light > 0 && request.light <= 2)) {
+            request.pole.more = Phaser.Utils.Array.GetRandom([-1, -2, 1, 2]);
+            if (request.light + request.pole.more < 0) {
+                request.pole.more = 0;
+            }
+        }
+        request.count = request.light + request.pole.more;
+        let currect = [];
+        let wrong = [];
+        if (this.level.keepResponse.length >= 2) {
+            createResponse = true;
+        }
+        if (createResponse) {
+            for (let index in this.level.keepResponse) {
+                currect.push(this.level.keepResponse[index]);
+            }
+            this.level.keepResponse = [];
+        }
+        let needLamp = request.count;
+        while (needLamp > 0) {
+            let select = 1;
+            if (needLamp > 1) {
+                select = (request.light >= 2 ? 2 : Phaser.Utils.Array.GetRandom([1, 2]));
+            }
+            currect.push(select);
+            needLamp -= select;
+        }
+        if (!createResponse) {
+            for (let index in currect) {
+                this.level.keepResponse.push(currect[index]);
+            }
+            currect = [];
+        }
+        for (let i = 0; i < currect.length / 2; i++) {
+            wrong.push(Phaser.Math.Between(1, 2));
+        }
+        return {
+            request,
+            currect,
+            wrong
+        };
+    }
     addContent(scope) {
-        // do {
-        let space = Phaser.Math.Between(20, this.scene.game.config.width * 0.1);
-
-        let lightCount = Phaser.Math.Between(0, 4);
-        let tree = new TreeSprite(this.scene, Phaser.Math.Between(1, 6), lightCount).show().setX(scope.keep + space);
-        scope.el.add(tree);
-        scope.keep += tree.width + space;
-
-        let pole = new PoleSprite(this.scene).show().setX(scope.keep + space);
-        scope.el.add(pole);
-        scope.keep += pole.displayWidth + space;
-
-        let bench = new BenchSprite(this.scene).show().setX(scope.keep + space);
-        scope.el.add(bench);
-        scope.keep += bench.displayWidth + space;
-
-        let lamp = new LampSprite(this.scene, 1, false, false).show().setX(scope.keep + space);
-        scope.el.add(lamp);
-        scope.keep += lamp.displayWidth + space;
-
-        // }
-        // while (scope.keep <= scope.el.width * 0.8);
+        if (!this.level.data.length) {
+            this.initRequest();
+        }
+        let maxWidth = scope.el.width * (this.scene.game.device.os.desktop ? 0.8 : 0.6);
+        let container = this.scene.add.container(0, 0);
+        scope.el.add(container);
+        while (scope.keep <= maxWidth && this.level.data.length) {
+            let data = this.level.data.shift();
+            // add tree
+            let treeSpace = Phaser.Math.Between(10, 30);
+            let tree = new TreeSprite(this.scene, Phaser.Math.Between(1, 6), data.request.light).show().setX(scope.keep + treeSpace);
+            scope.keep += tree.width + treeSpace;
+            container.add(tree);
+            if (!data.request.pole.status) {
+                // add bench
+                if (Phaser.Math.Between(1, 2) == 2) {
+                    let benchSpace = Phaser.Math.Between(10, 20);
+                    let bench = new BenchSprite(this.scene).show().setX(scope.keep + benchSpace);
+                    scope.keep += bench.displayWidth + benchSpace;
+                    container.add(bench);
+                }
+            }
+            else {
+                // add pole
+                let poleSpace = Phaser.Math.Between(5, 15);
+                let pole = new PoleSprite(this.scene, data.request.pole.more).show().setX(scope.keep + poleSpace);
+                scope.keep += pole.displayWidth + poleSpace;
+                container.add(pole);
+            }
+            let lamps = [];
+            // add currect lamps
+            for (let index in data.currect) {
+                let lampSpace = Phaser.Math.Between(10, 20);
+                let lampItem = new LampSprite(this.scene, data.currect[index], Phaser.Utils.Array.GetRandom([false, true]), true)
+                    .show()
+                    .setFlipX((data.currect[index] == 1 ? Phaser.Utils.Array.GetRandom([false, true]) : false))
+                    .setX(scope.keep + lampSpace);
+                scope.keep += lampItem.displayWidth + lampSpace;
+                lamps.push(lampItem);
+            }
+            // add wrong lamps
+            for (let index in data.wrong) {
+                if (scope.keep <= maxWidth) {
+                    let lampSpace = Phaser.Math.Between(10, 20);
+                    let lampItem = new LampSprite(this.scene, data.wrong[index], Phaser.Utils.Array.GetRandom([false, true]), false)
+                        .show()
+                        .setFlipX((data.currect[index] == 1 ? Phaser.Utils.Array.GetRandom([false, true]) : false))
+                        .setX(scope.keep + lampSpace);
+                    scope.keep += lampItem.displayWidth + lampSpace;
+                    lamps.push(lampItem);
+                }
+            }
+            container.add(lamps);
+        }
+        container.x = ((scope.el.width - scope.keep) / 2);
     }
     removeContent(scope) {
         scope.status = "pause";
-        scope.el.x = Math.abs(this.limit);
-        scope.el.each((child) => {
+        let gameOver = false;
+        scope.el.last.each((child) => {
+            child.setAlpha(0.3);
             if (child.gameCheck) {
-                console.log(child);
+                if (child.isCurrect != child.lightStatus) {
+                    child.setAlpha(1).setTintFill(0xff0000, 0x000000);
+                    gameOver = true;
+                }
             }
-            // child.destroy();
         });
-        scope.el.removeAll(true);
-        scope.keep = 20;
+        if (gameOver) {
+            this.scene.pauseSpace();
+
+            if (this.scope.one.status == "active") {
+                this.scene.tweens.add({
+                    targets: this.scope.one.el,
+                    x: this.scene.game.config.width * 1.2,
+                    duration: 800,
+                    ease: Phaser.Math.Easing.Back.In
+                });
+            }
+            if (this.scope.two.status == "active") {
+                this.scene.tweens.add({
+                    targets: this.scope.two.el,
+                    x: this.scene.game.config.width * 1.2,
+                    duration: 800,
+                    ease: Phaser.Math.Easing.Back.In
+                });
+            }
+            if (this.scope.three.status == "active") {
+                this.scene.tweens.add({
+                    targets: this.scope.three.el,
+                    x: this.scene.game.config.width * 1.2,
+                    duration: 800,
+                    ease: Phaser.Math.Easing.Back.In
+                });
+            }
+            this.scene.tweens.add({
+                targets: scope.el,
+                x: 0,
+                delay: 800,
+                duration: 800,
+                ease: Phaser.Math.Easing.Back.Out
+            });
+            this.scene.time.addEvent({
+                delay: 1000,
+                callback: () => {
+                    this.scene.title.setText("Game Over").setDepth(20).setTintFill(0xff0000, 0x000000);
+                },
+                callbackScope: this.scene
+            });
+            this.scene.time.addEvent({
+                delay: 6000,
+                callback: () => {
+                    this.scene.scene.start("Boot");
+                },
+                callbackScope: this.scene
+            });
+        } else {
+            scope.el.x = Math.abs(this.limit);
+            scope.el.removeAll(true);
+            scope.keep = 20;
+        }
     }
     run(speed = 0) {
         if (speed) {
@@ -198,44 +355,44 @@ class Platform extends Phaser.GameObjects.Container {
             if (this.scope.one.status == "active") {
                 this.scope.one.el.x -= speed;
                 if (this.scope.one.el.x <= this.limit) {
-                    this.removeContent(this.scope.one);
                     this.scope.available = "one";
                     this.scope.three.status = "active";
+                    this.removeContent(this.scope.one);
                     this.addContent(this.scope.three);
                 }
             }
             if (this.scope.two.status == "active") {
                 this.scope.two.el.x -= speed;
                 if (this.scope.two.el.x <= this.limit) {
-                    this.removeContent(this.scope.two);
                     this.scope.available = "two";
                     this.scope.one.status = "active";
+                    this.removeContent(this.scope.two);
                     this.addContent(this.scope.one);
                 }
             }
             if (this.scope.three.status == "active") {
                 this.scope.three.el.x -= speed;
                 if (this.scope.three.el.x <= this.limit) {
-                    this.removeContent(this.scope.three);
                     this.scope.available = "three";
                     this.scope.two.status = "active";
+                    this.removeContent(this.scope.three);
                     this.addContent(this.scope.two);
-                    // test
-                    // this.scene.pauseSpace();
                 }
             }
-            this.title.setText(Math.round(this.level.score / 10).toString().padStart(6, "0"));
+            this.scene.title.setText(Math.round(this.level.score / 10).toString().padStart(5, "0"));
         }
     }
     area(scope, color) {
         scope.setSize(this.scene.game.config.width - 40, (this.scene.game.config.height * 0.8) - 40)
-        let areaStart = this.scene.add.graphics(0, 0)
-            .fillStyle(color, 0.5)
-            .fillRect(10, 10, 2, scope.height + 20);
-        let areaEnd = this.scene.add.graphics(0, 0)
-            .fillStyle(color, 0.5)
-            .fillRect(scope.width - 10, 10, 2, scope.height + 20);
-        scope.add([areaStart, areaEnd]);
+        if (false) {
+            let areaStart = this.scene.add.graphics(0, 0)
+                .fillStyle(color, 0.5)
+                .fillRect(10, 10, 2, scope.height + 20);
+            let areaEnd = this.scene.add.graphics(0, 0)
+                .fillStyle(color, 0.5)
+                .fillRect(scope.width + 20, 10, 2, scope.height + 20);
+            scope.add([areaStart, areaEnd]);
+        }
         return this;
     }
 }
@@ -243,8 +400,15 @@ class Platform extends Phaser.GameObjects.Container {
 module.exports = Platform;
 },{"./bench":3,"./lamp":4,"./pole":6,"./tree":7}],6:[function(require,module,exports){
 class Pole extends Phaser.GameObjects.Sprite {
-    constructor(scene, type = "") {
-        super(scene, 0, scene.game.config.height * 0.8, `pole${type}`);
+    constructor(scene, type = "0") {
+        let poleType = {
+            "-2": "-2",
+            "-1": "-1",
+            "0": "",
+            "1": "+1",
+            "2": "+2"
+        };
+        super(scene, 0, scene.game.config.height * 0.8, `pole${poleType[type]}`);
         this.scene = scene;
         this.setOrigin(0, 0.98)
             .setScale(0.8)
@@ -315,6 +479,7 @@ class Scene extends Phaser.Scene {
         super(name);
         this.name = name;
         this.keepLog = [];
+        this.lock = true;
     }
     log(message = null, system = false) {
         if (this.game.debug && message) {
@@ -332,32 +497,39 @@ class Scene extends Phaser.Scene {
         this.log("preload", true);
     }
     create() {
+        // add ground
         this.ground = this.add.tileSprite(-2, this.game.config.height + 2, this.game.config.width + 4, this.game.config.height * 0.2, "ground")
             .setOrigin(0, 1)
             .setTileScale((this.game.device.os.desktop ? 1 : 0.6))
             .setDepth(0);
-        this.ground.speed = { current: 0, pause: 0, min: 0.4, mid: 0.8, max: 1 };
+        this.ground.speed = { current: 0, pause: 0, min: 2, mid: 3, max: 4 };
+        // add city
         this.city = this.add.tileSprite(0, this.game.config.height * 0.8, this.game.config.width, 109, "city")
             .setOrigin(0, 1)
             .setDepth(1);
-        this.city.speed = { current: 0, pause: 0, min: 0.1, mid: 0.3, max: 0.6 };
+        this.city.speed = { current: 0, pause: 0, min: 0.2, mid: 0.4, max: 0.6 };
+        this.line = this.add.graphics(0, 0)
+            .fillStyle(0xf4d242, 1)
+            .fillRect(0, (this.game.config.height * 0.8), this.game.config.width, 3)
+            .setDepth(1);
+        // add cloud
         this.cloud = this.add.tileSprite(0, this.game.config.height * 0.6, this.game.config.width, 105, "cloud")
             .setOrigin(0, 1)
             .setDepth(2);
-        this.cloud.speed = { current: 0, pause: 0, min: -0.2, mid: -0.4, max: -0.6 };
+        this.cloud.speed = { current: 0, pause: 0, min: -0.4, mid: -0.6, max: -0.8 };
         // load platform
-        if (this.name == "Play") {
-            this.platform = new Platform(this);
-        }
+        this.title = this.add.text(this.game.config.width * 0.5, this.game.config.height * 0.15, "", {
+            font: `${(this.game.device.os.desktop ? "160" : "100")}px '${this.game.font}'`,
+            fill: "#FFF8EE"
+        }).setOrigin(0.5);
         // end of scene
         this.log("create", true);
         this.game.sceneLog(this.name, this.keepLog);
     }
     update() {
+        if (this.lock) return;
         if (this.ground.speed.current) {
-            if (this.name == "Play") {
-                this.platform.run(this.ground.speed.current);
-            }
+            this.platform.run(this.ground.speed.current);
             this.ground.tilePositionX += (this.game.device.os.desktop ? this.ground.speed.current : this.ground.speed.current * 1.6);
             if (this.city.speed.current) {
                 this.city.tilePositionX += this.city.speed.current;
@@ -366,19 +538,6 @@ class Scene extends Phaser.Scene {
         if (this.cloud.speed.current) {
             this.cloud.tilePositionX += this.cloud.speed.current;
         }
-    }
-    runSpace(speed = "min", object = []) {
-        if (!object.length) {
-            object = ["ground", "city", "cloud"];
-        }
-        for (let index in object) {
-            this[object[index]].speed.current = this[object[index]].speed[speed];
-        }
-    }
-    pauseSpace() {
-        this.ground.speed.current = this.ground.speed.pause;
-        this.city.speed.current = this.city.speed.pause;
-        this.cloud.speed.current = this.cloud.speed.pause;
     }
 }
 
@@ -398,6 +557,7 @@ class Boot extends Scene {
         this.load.image("ground", "data/ground.png");
         this.load.image("city", "data/city.png");
         this.load.image("cloud", "data/cloud.png");
+        this.load.image("play", "data/play.png");
         //
         this.load.image("tree1", "data/tree1.png");
         this.load.image("tree2", "data/tree2.png");
@@ -422,20 +582,38 @@ class Boot extends Scene {
     }
     create() {
         super.create();
-        this.scene.start("Play");
-        //
-        // setTimeout(() => {
-        // }, 2000);
+        this.title.setText("Light Tree");
+        this.btn = this.add.sprite(0, 0, "play")
+            .setOrigin(0.5)
+            .setPosition(this.game.config.width / 2, this.game.config.height / 2)
+            .setDepth(10)
+            .setScale(0.4)
+            .setInteractive()
+            .on("pointerdown", () => {
+                this.scene.start("Play");
+            }, this);;
+        this.tweens.add({
+            targets: this.btn,
+            x: {
+                from: this.game.config.width * 0.495,
+                to: this.game.config.width * 0.505
+            },
+            duration: 300,
+            yoyo: true,
+            repeat: -1
+        });
     }
 }
 
 module.exports = Boot;
 },{"../scene":8}],10:[function(require,module,exports){
 const Scene = require("../scene");
+const Platform = require("../gameObject/platform");
 
 class Play extends Scene {
     constructor() {
         super("Play");
+        this.lock = false;
     }
     init() {
         super.init();
@@ -445,14 +623,50 @@ class Play extends Scene {
     }
     create() {
         super.create();
-        this.runSpace("max");
-        // setTimeout(() => {
-        //     this.pauseSpace();
-        // }, 6000);
+        this.lock = false;
+        this.platform = new Platform(this);
+        if (this.game.config.height > this.game.config.width) {
+            this.title.setText("Rotate!");
+            this.tweens.add({
+                targets: this.title,
+                angle: { from: -5, to: 5 },
+                duration: 150,
+                yoyo: true,
+                repeat: -1
+            });
+        } else {
+            if (this.game.config.width < 480 || this.game.config.height < 320) {
+                this.title.setText("Screen!");
+                this.tweens.add({
+                    targets: this.title,
+                    y: 50,
+                    duration: 150,
+                    yoyo: true,
+                    repeat: -1
+                });
+            } else {
+                this.platform.show();
+                this.runSpace();
+            }
+        }
+    }
+    runSpace(speed = "min", object = []) {
+        if (!object.length) {
+            object = ["ground", "city", "cloud"];
+        }
+        for (let index in object) {
+            this[object[index]].speed.current = this[object[index]].speed[speed];
+        }
+    }
+    pauseSpace() {
+        this.lock = true;
+        this.ground.speed.current = this.ground.speed.pause;
+        this.city.speed.current = this.city.speed.pause;
+        this.cloud.speed.current = this.cloud.speed.pause;
     }
 }
 
 module.exports = Play;
-},{"../scene":8}]},{},[1])
+},{"../gameObject/platform":5,"../scene":8}]},{},[1])
 
 //# sourceMappingURL=action.js.map
