@@ -38,6 +38,13 @@ class Boot extends Scene {
     }
     create() {
         super.create();
+        // music
+        this.load.audio("music", "data/music.mp3").on("filecomplete", () => {
+            this.sound.add("music", {
+                volume: 1,
+                loop: true
+            }).play()
+        }).start();
         this.helpOpen = false;
         if (this.game.config.height > this.game.config.width) {
             this.title.setText("Rotate!")
