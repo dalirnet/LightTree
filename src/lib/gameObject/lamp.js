@@ -5,8 +5,8 @@ class Lamp extends Phaser.GameObjects.Sprite {
         this.gameCheck = true;
         this.isCurrect = currect;
         this.lightStatus = status;
-        this.setOrigin(0, 0.98)
-            .setScale(0.8)
+        this.setOrigin(0, 0.96)
+            .setScale((this.scene.game.device.os.desktop ? 0.8 : 0.6))
             .setDepth(4)
             .setInteractive()
             .on("pointerdown", () => {

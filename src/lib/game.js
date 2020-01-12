@@ -1,5 +1,6 @@
 // load scenes
 const BootScene = require("./scene/boot");
+const HelpScene = require("./scene/help");
 const PlayScene = require("./scene/play");
 
 class Game extends Phaser.Game {
@@ -24,6 +25,7 @@ class Game extends Phaser.Game {
             },
             scene: [
                 BootScene,
+                HelpScene,
                 PlayScene
             ]
         });
@@ -38,7 +40,14 @@ class Game extends Phaser.Game {
         }
         this.scale.on("resize", () => {
             document.querySelector("#game canvas").style.opacity = 0;
-            window.location.reload();
+            this.config.width = window.innerWidth;
+            this.config.height = window.innerHeight;
+            this.scene.getScene("Play").scene.stop();
+            this.scene.getScene("Help").scene.stop();
+            this.scene.getScene("Boot").scene.restart();
+            setTimeout(() => {
+                document.querySelector("#game canvas").style.opacity = 1;
+            }, 250);
         });
     }
     sceneLog(name, log) {

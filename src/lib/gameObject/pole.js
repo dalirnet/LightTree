@@ -9,8 +9,8 @@ class Pole extends Phaser.GameObjects.Sprite {
         };
         super(scene, 0, scene.game.config.height * 0.8, `pole${poleType[type]}`);
         this.scene = scene;
-        this.setOrigin(0, 0.98)
-            .setScale(0.8)
+        this.setOrigin(0, 0.97)
+            .setScale((this.scene.game.device.os.desktop ? 0.8 : 0.6))
             .setDepth(4);
         //
         return this;

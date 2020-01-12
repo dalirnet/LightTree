@@ -6,6 +6,7 @@ class Scene extends Phaser.Scene {
         this.name = name;
         this.keepLog = [];
         this.lock = true;
+        this.helpOpen = false;
     }
     log(message = null, system = false) {
         if (this.game.debug && message) {
@@ -28,12 +29,24 @@ class Scene extends Phaser.Scene {
             .setOrigin(0, 1)
             .setTileScale((this.game.device.os.desktop ? 1 : 0.6))
             .setDepth(0);
-        this.ground.speed = { current: 0, pause: 0, min: 2, mid: 3, max: 4 };
+        this.ground.speed = {
+            current: 0,
+            pause: 0,
+            min: (this.game.device.os.desktop ? 2.5 : 2),
+            mid: (this.game.device.os.desktop ? 3.5 : 3),
+            max: (this.game.device.os.desktop ? 4.5 : 4),
+        };
         // add city
         this.city = this.add.tileSprite(0, this.game.config.height * 0.8, this.game.config.width, 109, "city")
             .setOrigin(0, 1)
             .setDepth(1);
-        this.city.speed = { current: 0, pause: 0, min: 0.2, mid: 0.4, max: 0.6 };
+        this.city.speed = {
+            current: 0,
+            pause: 0,
+            min: 0.2,
+            mid: 0.4,
+            max: 0.6
+        };
         this.line = this.add.graphics(0, 0)
             .fillStyle(0xf4d242, 1)
             .fillRect(0, (this.game.config.height * 0.8), this.game.config.width, 3)
@@ -42,12 +55,44 @@ class Scene extends Phaser.Scene {
         this.cloud = this.add.tileSprite(0, this.game.config.height * 0.6, this.game.config.width, 105, "cloud")
             .setOrigin(0, 1)
             .setDepth(2);
-        this.cloud.speed = { current: 0, pause: 0, min: -0.4, mid: -0.6, max: -0.8 };
+        this.cloud.speed = {
+            current: 0,
+            pause: 0,
+            min: -0.4,
+            mid: -0.6,
+            max: -0.8
+        };
         // load platform
         this.title = this.add.text(this.game.config.width * 0.5, this.game.config.height * 0.15, "", {
             font: `${(this.game.device.os.desktop ? "160" : "100")}px '${this.game.font}'`,
             fill: "#FFF8EE"
         }).setOrigin(0.5);
+        // add help
+        this.helpBtn = this.add.text(25, this.game.config.height - 20, "?", {
+            font: `${(this.game.device.os.desktop ? "40" : "30")}px '${this.game.font}'`,
+            fill: "#FFF8EE"
+        }).setOrigin(0, 1)
+            .setInteractive()
+            .on("pointerdown", () => {
+                if (!this.helpOpen) {
+                    this.scene.start("Help");
+                } else {
+                    this.scene.start("Boot");
+                }
+            }, this);
+        // add fullscreen
+        this.fullscreenBtn = this.add.text(this.game.config.width - 25, this.game.config.height - 20, "⎚", {
+            font: `${(this.game.device.os.desktop ? "40" : "30")}px '${this.game.font}'`,
+            fill: "#FFF8EE"
+        }).setOrigin(1, 1)
+            .setInteractive()
+            .on("pointerdown", () => {
+                if (this.scale.isFullscreen) {
+                    this.scale.stopFullscreen();
+                } else {
+                    this.scale.startFullscreen();
+                }
+            }, this);
         // end of scene
         this.log("create", true);
         this.game.sceneLog(this.name, this.keepLog);

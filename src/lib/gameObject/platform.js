@@ -53,7 +53,7 @@ class Platform extends Phaser.GameObjects.Container {
         if (this.level.current > (this.scene.game.device.os.desktop ? 2 : 4)) {
             this.scene.runSpace("mid");
         }
-        if (this.level.current > (this.scene.game.device.os.desktop ? 5 : 10)) {
+        if (this.level.current > (this.scene.game.device.os.desktop ? 5 : 8)) {
             this.scene.runSpace("max");
         }
         this.level.current++;

@@ -3,8 +3,8 @@ class Tree extends Phaser.GameObjects.Container {
         super(scene, 0, scene.game.config.height * 0.8);
         this.scene = scene;
         let tree = this.scene.add.sprite(0, 0, `tree${type}`)
-            .setScale(0.7)
-            .setOrigin(0, 0.92);
+            .setScale((this.scene.game.device.os.desktop ? 0.7 : 0.5))
+            .setOrigin(0, 0.91);
         this.add(tree);
         if (lightCount < 0 || lightCount > 4) {
             lightCount = 0;

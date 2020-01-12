@@ -15,6 +15,7 @@ class Play extends Scene {
     create() {
         super.create();
         this.lock = false;
+        this.helpOpen = false;
         this.platform = new Platform(this);
         if (this.game.config.height > this.game.config.width) {
             this.title.setText("Rotate!");
